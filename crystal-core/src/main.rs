@@ -7,6 +7,10 @@ extern crate serde_derive;
 #[macro_use]
 extern crate gotham_derive;
 
+#[macro_use]
+extern crate log;
+
+use crate::handlers::empty_handler;
 use dotenv::dotenv;
 use gotham::middleware::logger::RequestLogger;
 use gotham::pipeline::new_pipeline;
@@ -14,9 +18,9 @@ use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set};
 use gotham::router::builder::*;
 use gotham::router::Router;
 use gotham_middleware_diesel::{self, DieselMiddleware};
-use crate::handlers::empty_handler;
 
 mod handlers;
+mod lockfile;
 
 fn main() {
     #[cfg(target_family = "unix")]
@@ -24,6 +28,8 @@ fn main() {
 
     dotenv().ok();
     env_logger::init();
+
+    lockfile::watch_lockfile();
 
     let addr = "127.0.0.1:7878";
     println!("Listening for requests at http://{}", addr);
