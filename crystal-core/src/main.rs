@@ -10,6 +10,9 @@ extern crate gotham_derive;
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate lazy_static;
+
 use crate::handlers::empty_handler;
 use dotenv::dotenv;
 use gotham::middleware::logger::RequestLogger;
@@ -17,10 +20,31 @@ use gotham::pipeline::new_pipeline;
 use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set};
 use gotham::router::builder::*;
 use gotham::router::Router;
-use gotham_middleware_diesel::{self, DieselMiddleware};
+use league_client_connector::RiotLockFile;
+use std::sync::{Arc, Mutex};
 
 mod handlers;
 mod lockfile;
+
+// static ref LOCKFILE: Arc<Mutex<Option<RiotLockFile>>> = Arc::new(Mutex::new(None));
+lazy_static! {
+    static ref LOCKFILE: Lockfile = Lockfile::new();
+}
+
+// static LOCKFILE: Lockfile = Lockfile::new();
+
+#[derive(Clone, StateData)]
+pub struct Lockfile {
+    pub inner: Arc<Mutex<Option<RiotLockFile>>>,
+}
+
+impl Lockfile {
+    pub fn new() -> Self {
+        Self {
+            inner: Arc::new(Mutex::new(None)),
+        }
+    }
+}
 
 fn main() {
     #[cfg(target_family = "unix")]
@@ -29,7 +53,7 @@ fn main() {
     dotenv().ok();
     env_logger::init();
 
-    lockfile::watch_lockfile();
+    lockfile::watch_lockfile(&LOCKFILE);
 
     let addr = "127.0.0.1:7878";
     println!("Listening for requests at http://{}", addr);
@@ -49,5 +73,9 @@ fn router() -> Router {
 
     build_router(default_chain, pipeline_set, |route| {
         route.get_or_head("/").to(empty_handler);
+
+        route
+            .get("/v1/lockfile")
+            .to(handlers::lockfile::lockfile_handler);
     })
 }
