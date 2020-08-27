@@ -9,7 +9,7 @@ use mime;
 
 #[derive(Serialize)]
 struct NoLockfile {
-    message: String,
+    error: String,
 }
 
 pub fn lockfile_handler(state: State) -> Box<HandlerFuture> {
@@ -21,7 +21,7 @@ pub fn lockfile_handler(state: State) -> Box<HandlerFuture> {
         Some(l) => serde_json::to_string(l).expect("Unable to parse lockfile"),
         None => {
             let empty = NoLockfile {
-                message: "Lockfile is not ready yet".to_string(),
+                error: "Lockfile is not ready yet".to_string(),
             };
 
             serde_json::to_string(&empty).unwrap()
