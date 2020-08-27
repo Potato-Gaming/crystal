@@ -26,12 +26,9 @@ use std::sync::{Arc, Mutex};
 mod handlers;
 mod lockfile;
 
-// static ref LOCKFILE: Arc<Mutex<Option<RiotLockFile>>> = Arc::new(Mutex::new(None));
 lazy_static! {
     static ref LOCKFILE: Lockfile = Lockfile::new();
 }
-
-// static LOCKFILE: Lockfile = Lockfile::new();
 
 #[derive(Clone, StateData)]
 pub struct Lockfile {
