@@ -48,7 +48,7 @@ fn main() {
     openssl_probe::init_ssl_cert_env_vars();
 
     dotenv().ok();
-    env_logger::init();
+    pretty_env_logger::init();
 
     lockfile::watch_lockfile(&LOCKFILE);
 
