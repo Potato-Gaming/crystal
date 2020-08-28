@@ -1,11 +1,12 @@
+use crate::events;
 use crate::Lockfile;
 use league_client_connector::{LeagueClientConnector, LeagueConnectorError};
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
-use std::sync::mpsc::channel;
+use std::sync::mpsc::{channel, Sender};
 use std::thread;
 use std::time::Duration;
 
-pub fn watch_lockfile(lockfile: &'static Lockfile) {
+pub fn watch_lockfile(lockfile: &'static Lockfile, ev_tx: Sender<events::EventName>) {
     let event_timeout = Duration::from_millis(500);
     let (tx, rx) = channel();
 
@@ -32,6 +33,7 @@ pub fn watch_lockfile(lockfile: &'static Lockfile) {
         debug!("League Client Detected!");
         let lockfile_path = LeagueClientConnector::get_path().unwrap();
         update_lockfile(lockfile);
+        let _ = ev_tx.send(events::EventName::Start);
 
         watcher
             .watch(lockfile_path, RecursiveMode::NonRecursive)
@@ -43,10 +45,12 @@ pub fn watch_lockfile(lockfile: &'static Lockfile) {
                     notify::DebouncedEvent::Create { .. } => {
                         debug!("Lockfile created");
                         update_lockfile(lockfile);
+                        let _ = ev_tx.send(events::EventName::Restart);
                     }
                     notify::DebouncedEvent::Write { .. } => {
                         debug!("Lockfile written");
                         update_lockfile(lockfile);
+                        let _ = ev_tx.send(events::EventName::Restart);
                     }
                     notify::DebouncedEvent::Remove { .. } => {
                         debug!("Lockfile deleted");
