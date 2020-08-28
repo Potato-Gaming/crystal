@@ -4,6 +4,10 @@ Crystal Ball for League of Legends. Get pro builds and runes before you start, a
 
 This is a side project, in very early phases of development. 😊
 
+## Architecture
+
+![Component Diagram](./architecture.svg)
+
 ## Development
 
 ```bash
