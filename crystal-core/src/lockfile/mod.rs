@@ -31,6 +31,7 @@ pub fn watch_lockfile(lockfile: &'static Lockfile) {
 
         debug!("League Client Detected!");
         let lockfile_path = LeagueClientConnector::get_path().unwrap();
+        update_lockfile(lockfile);
 
         watcher
             .watch(lockfile_path, RecursiveMode::NonRecursive)
