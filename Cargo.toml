@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-  "crystal-core"
+  "crystal-core",
+  "league-client"
 ]

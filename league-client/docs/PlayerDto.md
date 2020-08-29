@@ -1,0 +1,12 @@
+# PlayerDto
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**banned** | Option<**bool**> |  | [optional]
+**notifications** | Option<[**Vec<crate::models::ClashOfflineNotification>**](ClashOfflineNotification.md)> |  | [optional]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -1,0 +1,14 @@
+# LolEndOfGameGameDataCompanion
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**color_name** | Option<**String**> |  | [optional]
+**content_id** | Option<**String**> |  | [optional]
+**loadouts_icon** | Option<**String**> |  | [optional]
+**species_name** | Option<**String**> |  | [optional]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

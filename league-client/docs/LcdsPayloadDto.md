@@ -1,0 +1,14 @@
+# LcdsPayloadDto
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**body** | Option<**String**> |  | [optional]
+**headers** | Option<**::std::collections::HashMap<String, String>**> |  | [optional]
+**method** | Option<**String**> |  | [optional]
+**path** | Option<**String**> |  | [optional]
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
