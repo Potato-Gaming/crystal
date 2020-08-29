@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**data** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **id** | Option<**String**> |  | [optional]
 **notification_id** | Option<[**crate::models::PatcherNotificationId**](PatcherNotificationId.md)> |  | [optional]
 

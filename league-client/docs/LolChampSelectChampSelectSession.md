@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**actions** | Option<[**Vec<::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**actions** | Option<[**Vec<serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **allow_battle_boost** | Option<**bool**> |  | [optional]
 **allow_duplicate_picks** | Option<**bool**> |  | [optional]
 **allow_locked_events** | Option<**bool**> |  | [optional]

@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**body** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**body** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **id** | Option<**i64**> |  | [optional]
 **_type** | Option<**String**> |  | [optional]
 

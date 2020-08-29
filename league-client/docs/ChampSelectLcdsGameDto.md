@@ -17,8 +17,8 @@ Name | Type | Description | Notes
 **room_password** | Option<**String**> |  | [optional]
 **spectator_delay** | Option<**i64**> |  | [optional]
 **status_of_participants** | Option<**String**> |  | [optional]
-**team_one** | Option<[**Vec<::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
-**team_two** | Option<[**Vec<::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**team_one** | Option<[**Vec<serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**team_two** | Option<[**Vec<serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

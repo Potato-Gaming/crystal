@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **inventory_type** | Option<**String**> |  | [optional]
 **item_id** | Option<**i32**> |  | [optional]
-**payload** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**payload** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **purchase_date** | Option<**String**> |  | [optional]
 **uuid** | Option<**String**> |  | [optional]
 

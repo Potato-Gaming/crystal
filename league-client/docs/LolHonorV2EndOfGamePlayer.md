@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **profile_icon_id** | Option<**i32**> |  | [optional]
 **skin_index** | Option<**i32**> |  | [optional]
 **skin_name** | Option<**String**> |  | [optional]
-**stats** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**stats** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **summoner_id** | Option<**i64**> |  | [optional]
 **summoner_name** | Option<**String**> |  | [optional]
 **team_id** | Option<**i32**> |  | [optional]

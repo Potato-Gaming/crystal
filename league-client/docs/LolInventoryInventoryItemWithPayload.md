@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **inventory_type** | Option<**String**> |  | [optional]
 **item_id** | Option<**i32**> |  | [optional]
 **ownership_type** | Option<[**crate::models::LolInventoryItemOwnershipType**](LolInventoryItemOwnershipType.md)> |  | [optional]
-**payload** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**payload** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **purchase_date** | Option<**String**> |  | [optional]
 **quantity** | Option<**i64**> |  | [optional]
 **uuid** | Option<**String**> |  | [optional]

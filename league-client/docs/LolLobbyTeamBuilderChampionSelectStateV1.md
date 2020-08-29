@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action_set_list** | Option<[**Vec<::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**action_set_list** | Option<[**Vec<serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **allow_duplicate_picks** | Option<**bool**> |  | [optional]
 **allow_opting_out_of_banning** | Option<**bool**> |  | [optional]
 **allow_skin_selection** | Option<**bool**> |  | [optional]
 **battle_boost_state** | Option<[**crate::models::LolLobbyTeamBuilderTeamBuilderBoostInfo**](LolLobbyTeamBuilderTeamBuilderBoostInfo.md)> |  | [optional]
 **cells** | Option<[**crate::models::LolLobbyTeamBuilderCellsV1**](LolLobbyTeamBuilderCellsV1.md)> |  | [optional]
-**ceremonies_by_action_set_index** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**ceremonies_by_action_set_index** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **champion_bench_state** | Option<[**crate::models::LolLobbyTeamBuilderChampionBenchStateV1**](LolLobbyTeamBuilderChampionBenchStateV1.md)> |  | [optional]
 **current_action_set_index** | Option<**i32**> |  | [optional]
 **current_time_remaining_millis** | Option<**i64**> |  | [optional]

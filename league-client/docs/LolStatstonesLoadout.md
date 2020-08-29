@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | Option<**String**> |  | [optional]
 **item_id** | Option<**i32**> |  | [optional]
-**loadout** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**loadout** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **name** | Option<**String**> |  | [optional]
 **scope** | Option<**String**> |  | [optional]
 

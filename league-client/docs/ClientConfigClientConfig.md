@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**data** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **params** | Option<[**crate::models::ClientConfigConfigParams**](ClientConfigConfigParams.md)> |  | [optional]
 **update_time** | Option<**i64**> |  | [optional]
 

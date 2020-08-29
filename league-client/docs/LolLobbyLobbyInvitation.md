@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **from_summoner_id** | Option<**i64**> |  | [optional]
 **from_summoner_name** | Option<**String**> |  | [optional]
 **id** | Option<**String**> |  | [optional]
-**invitation_meta_data** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**invitation_meta_data** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **state** | Option<[**crate::models::LolLobbyLobbyInvitationState**](LolLobbyLobbyInvitationState.md)> |  | [optional]
 **timestamp** | Option<**String**> |  | [optional]
 **to_summoner_id** | Option<**i64**> |  | [optional]

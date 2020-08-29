@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**actions** | Option<[**Vec<::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**actions** | Option<[**Vec<serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **bans** | Option<[**crate::models::LolPerksChampSelectBannedChampions**](LolPerksChampSelectBannedChampions.md)> |  | [optional]
 **chat_details** | Option<[**crate::models::LolPerksChampSelectChatRoomDetails**](LolPerksChampSelectChatRoomDetails.md)> |  | [optional]
 **is_spectating** | Option<**bool**> |  | [optional]

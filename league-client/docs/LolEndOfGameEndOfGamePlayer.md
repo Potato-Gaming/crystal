@@ -22,7 +22,7 @@ Name | Type | Description | Notes
 **skin_name** | Option<**String**> |  | [optional]
 **spell1_id** | Option<**i32**> |  | [optional]
 **spell2_id** | Option<**i32**> |  | [optional]
-**stats** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**stats** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **summoner_id** | Option<**i64**> |  | [optional]
 **summoner_name** | Option<**String**> |  | [optional]
 **team_id** | Option<**i32**> |  | [optional]

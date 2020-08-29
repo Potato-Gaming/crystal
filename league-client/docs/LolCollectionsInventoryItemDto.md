@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 **item_id** | Option<**i32**> |  | [optional]
 **loyalty** | Option<**bool**> |  | [optional]
 **lsb** | Option<**bool**> |  | [optional]
-**payload** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**payload** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **purchase_date** | Option<**String**> |  | [optional]
 **quantity** | Option<**i64**> |  | [optional]
 **rental** | Option<**bool**> |  | [optional]

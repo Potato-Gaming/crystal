@@ -44,7 +44,7 @@ Name | Type | Description | Notes
 **next_level_xp** | Option<**i64**> |  | [optional]
 **odin_bonus_ip** | Option<**i32**> |  | [optional]
 **party_rewards_bonus_ip_earned** | Option<**i32**> |  | [optional]
-**points_penalties** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**points_penalties** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **pre_level_up_experience_total** | Option<**i64**> |  | [optional]
 **pre_level_up_next_level_xp** | Option<**i64**> |  | [optional]
 **previous_level** | Option<**i64**> |  | [optional]

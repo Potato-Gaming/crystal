@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **member_status_string** | Option<**String**> |  | [optional]
 **name** | Option<**String**> |  | [optional]
 **players** | Option<[**Vec<crate::models::LolHonorV2EndOfGamePlayer>**](LolHonorV2EndOfGamePlayer.md)> |  | [optional]
-**stats** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**stats** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **tag** | Option<**String**> |  | [optional]
 **team_id** | Option<**i32**> |  | [optional]
 

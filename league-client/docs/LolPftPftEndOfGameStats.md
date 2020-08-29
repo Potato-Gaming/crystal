@@ -41,7 +41,7 @@ Name | Type | Description | Notes
 **new_spells** | Option<**Vec<i32>**> |  | [optional]
 **odin_bonus_ip** | Option<**i32**> |  | [optional]
 **party_rewards_bonus_ip_earned** | Option<**i32**> |  | [optional]
-**points_penalties** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**points_penalties** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **previous_level** | Option<**i64**> |  | [optional]
 **previous_xp_total** | Option<**i64**> |  | [optional]
 **queue_bonus_earned** | Option<**i32**> |  | [optional]

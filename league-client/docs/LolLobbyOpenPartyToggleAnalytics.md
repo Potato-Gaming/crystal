@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **elapsed_time** | Option<**i64**> |  | [optional]
 **end_timestamp** | Option<**i64**> |  | [optional]
 **end_transition** | Option<**String**> |  | [optional]
-**event_data** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**event_data** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **event_timestamp** | Option<**i64**> |  | [optional]
 **event_type** | Option<**String**> |  | [optional]
 **final_state** | Option<**String**> |  | [optional]

@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **has_bundled_assets** | Option<**bool**> |  | [optional]
 **implements** | Option<**::std::collections::HashMap<String, String>**> |  | [optional]
 **mock** | Option<**String**> |  | [optional]
-**per_locale_asset_bundles** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**per_locale_asset_bundles** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **subtype** | Option<**String**> |  | [optional]
 **threading** | Option<[**crate::models::PluginThreadingModel**](PluginThreadingModel.md)> |  | [optional]
 **_type** | Option<**String**> |  | [optional]

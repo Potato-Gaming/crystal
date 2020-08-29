@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **account_id** | Option<**i64**> |  | [optional]
-**gas_token** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**gas_token** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **id_token** | Option<**String**> |  | [optional]
 **is_new_player** | Option<**bool**> |  | [optional]
 **puuid** | Option<**String**> |  | [optional]

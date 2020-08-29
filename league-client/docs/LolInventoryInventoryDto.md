@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **account_id** | Option<**i64**> |  | [optional]
 **expires** | Option<**String**> |  | [optional]
-**items** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**items** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **items_jwt** | Option<**String**> |  | [optional]
 **puuid** | Option<**String**> |  | [optional]
 **summoner_id** | Option<**i64**> |  | [optional]

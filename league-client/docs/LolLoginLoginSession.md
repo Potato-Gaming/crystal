@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **account_id** | Option<**i64**> |  | [optional]
 **connected** | Option<**bool**> |  | [optional]
 **error** | Option<[**crate::models::LolLoginLoginError**](LolLoginLoginError.md)> |  | [optional]
-**gas_token** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**gas_token** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **id_token** | Option<**String**> |  | [optional]
 **is_in_login_queue** | Option<**bool**> |  | [optional]
 **is_new_player** | Option<**bool**> |  | [optional]

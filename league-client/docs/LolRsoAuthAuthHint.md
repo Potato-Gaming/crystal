@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**context** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**context** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **required** | Option<**bool**> |  | [optional]
 **_type** | Option<[**crate::models::LolRsoAuthAuthHintType**](LolRsoAuthAuthHintType.md)> |  | [optional]
 

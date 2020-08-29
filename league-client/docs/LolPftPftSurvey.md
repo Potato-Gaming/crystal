@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **caption** | Option<**String**> |  | [optional]
-**data** | Option<[**::std::collections::HashMap<String, ::std::collections::HashMap<String, serde_json::Value>>**](map.md)> |  | [optional]
+**data** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
 **display** | Option<**String**> |  | [optional]
 **id** | Option<**i64**> |  | [optional]
 **title** | Option<**String**> |  | [optional]

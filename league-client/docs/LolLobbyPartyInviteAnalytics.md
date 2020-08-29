@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**event_data** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**event_data** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **event_timestamp** | Option<**i64**> |  | [optional]
 **event_type** | Option<**String**> |  | [optional]
 **from_summoner_id** | Option<**i64**> |  | [optional]

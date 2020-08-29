@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**gas_token** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**gas_token** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **password** | Option<**String**> |  | [optional]
 **username** | Option<**String**> |  | [optional]
 

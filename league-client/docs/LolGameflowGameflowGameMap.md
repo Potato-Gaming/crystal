@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**assets** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
-**categorized_content_bundles** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**assets** | Option<[**serde_json::Value**](.md)> |  | [optional]
+**categorized_content_bundles** | Option<[**serde_json::Value**](.md)> |  | [optional]
 **description** | Option<**String**> |  | [optional]
 **game_mode** | Option<**String**> |  | [optional]
 **game_mode_name** | Option<**String**> |  | [optional]
@@ -17,7 +17,7 @@ Name | Type | Description | Notes
 **name** | Option<**String**> |  | [optional]
 **platform_id** | Option<**String**> |  | [optional]
 **platform_name** | Option<**String**> |  | [optional]
-**properties** | Option<[**::std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> |  | [optional]
+**properties** | Option<[**serde_json::Value**](.md)> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
