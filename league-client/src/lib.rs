@@ -1,3 +1,6 @@
+#![allow(warnings)]
+#![allow(non_snake_case)]
+
 extern crate strum;
 #[macro_use]
 extern crate strum_macros;
