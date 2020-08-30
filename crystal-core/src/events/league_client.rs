@@ -1,11 +1,14 @@
 use crate::Lockfile;
 use native_tls::TlsConnector;
+use websocket::client::sync::Client;
 use websocket::header::{Authorization, Basic, Headers};
+use websocket::stream::sync::{TcpStream, TlsStream};
 use websocket::{ClientBuilder, Message, OwnedMessage};
 
 pub struct LeagueEventsWatcher {
   status: LeagueSubscriberStatus,
   lockfile: &'static Lockfile,
+  client: Option<Client<TlsStream<TcpStream>>>,
 }
 
 impl LeagueEventsWatcher {
@@ -13,6 +16,7 @@ impl LeagueEventsWatcher {
     Self {
       status: LeagueSubscriberStatus::Idle,
       lockfile,
+      client: None,
     }
   }
 
@@ -45,15 +49,24 @@ impl LeagueEventsWatcher {
     let addr = format!("wss://{}:{}/", l.address, l.port);
     debug!("Connecting to {:?}", addr);
 
-    let mut client = ClientBuilder::new(&addr)
+    let client = ClientBuilder::new(&addr)
       .unwrap()
       .add_protocol("wamp")
       .custom_headers(&headers)
       .connect_secure(Some(connector))
       .unwrap();
+    self.client = Some(client);
     self.status = LeagueSubscriberStatus::Connected;
 
     let message = Message::text("[5,\"OnJsonApiEvent\"]");
+
+    let client = match &mut self.client {
+      Some(client) => client,
+      None => {
+        return Ok(());
+      }
+    };
+
     client.send_message(&message).unwrap();
 
     for message in client.incoming_messages() {
@@ -90,6 +103,17 @@ impl LeagueEventsWatcher {
     debug!("Listener done");
 
     Ok(())
+  }
+
+  pub fn disconnect(&self) {
+    let client = match &self.client {
+      Some(c) => c,
+      None => {
+        return;
+      }
+    };
+
+    client.shutdown().unwrap();
   }
 }
 

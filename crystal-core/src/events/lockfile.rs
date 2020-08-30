@@ -17,6 +17,7 @@ pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>) {
         }
         Ok(LockfileEvent::Restart) => {
           debug!("Restarting events listener");
+          sub.disconnect();
           sub.connect().unwrap();
         }
         Err(e) => {
