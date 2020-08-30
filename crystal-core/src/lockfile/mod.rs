@@ -6,7 +6,7 @@ use std::sync::mpsc::{channel, Sender};
 use std::thread;
 use std::time::Duration;
 
-pub fn watch_lockfile(lockfile: &'static Lockfile, ev_tx: Sender<events::EventName>) {
+pub fn watch_lockfile(lockfile: &'static Lockfile, ev_tx: Sender<events::LockfileEvent>) {
     let event_timeout = Duration::from_millis(500);
     let (tx, rx) = channel();
 
@@ -33,7 +33,7 @@ pub fn watch_lockfile(lockfile: &'static Lockfile, ev_tx: Sender<events::EventNa
         debug!("League Client Detected!");
         let lockfile_path = LeagueClientConnector::get_path().unwrap();
         update_lockfile(lockfile);
-        let _ = ev_tx.send(events::EventName::Start);
+        let _ = ev_tx.send(events::LockfileEvent::Start);
 
         watcher
             .watch(lockfile_path, RecursiveMode::NonRecursive)
@@ -45,12 +45,12 @@ pub fn watch_lockfile(lockfile: &'static Lockfile, ev_tx: Sender<events::EventNa
                     notify::DebouncedEvent::Create { .. } => {
                         debug!("Lockfile created");
                         update_lockfile(lockfile);
-                        let _ = ev_tx.send(events::EventName::Restart);
+                        let _ = ev_tx.send(events::LockfileEvent::Restart);
                     }
                     notify::DebouncedEvent::Write { .. } => {
                         debug!("Lockfile written");
                         update_lockfile(lockfile);
-                        let _ = ev_tx.send(events::EventName::Restart);
+                        let _ = ev_tx.send(events::LockfileEvent::Restart);
                     }
                     notify::DebouncedEvent::Remove { .. } => {
                         debug!("Lockfile deleted");

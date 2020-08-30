@@ -63,7 +63,10 @@ fn main() {
     dotenv().ok();
     pretty_env_logger::init();
 
-    let (tx, rx): (Sender<events::EventName>, Receiver<events::EventName>) = channel();
+    let (tx, rx): (
+        Sender<events::LockfileEvent>,
+        Receiver<events::LockfileEvent>,
+    ) = channel();
 
     lockfile::watch_lockfile(&LOCKFILE, tx);
     events::listen(&LOCKFILE, rx);
