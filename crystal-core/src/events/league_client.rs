@@ -63,6 +63,7 @@ impl LeagueEventsWatcher {
     let client = match &mut self.client {
       Some(client) => client,
       None => {
+        debug!("This should not happen!");
         return Ok(());
       }
     };
@@ -105,7 +106,7 @@ impl LeagueEventsWatcher {
     Ok(())
   }
 
-  pub fn disconnect(&self) {
+  pub fn disconnect(&mut self) {
     let client = match &self.client {
       Some(c) => c,
       None => {
@@ -113,6 +114,7 @@ impl LeagueEventsWatcher {
       }
     };
 
+    self.status = LeagueSubscriberStatus::Idle;
     client.shutdown().unwrap();
   }
 }
