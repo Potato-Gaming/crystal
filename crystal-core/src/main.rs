@@ -20,40 +20,16 @@ use gotham::pipeline::new_pipeline;
 use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set};
 use gotham::router::builder::*;
 use gotham::router::Router;
-use league_client_connector::RiotLockFile;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use std::sync::{Arc, Mutex};
 
 mod events;
 mod handlers;
 mod lockfile;
 
+use lockfile::Lockfile;
+
 lazy_static! {
     static ref LOCKFILE: Lockfile = Lockfile::new();
-}
-
-#[derive(Clone, StateData)]
-pub struct Lockfile {
-    pub inner: Arc<Mutex<Option<RiotLockFile>>>,
-}
-
-impl Lockfile {
-    pub fn new() -> Self {
-        Self {
-            inner: Arc::new(Mutex::new(None)),
-        }
-    }
-
-    pub fn get_details(&self) -> Result<Option<RiotLockFile>, ()> {
-        let lockfile = LOCKFILE.inner.clone();
-        let lockfile = lockfile.lock().unwrap();
-        let lockfile: Option<&RiotLockFile> = lockfile.as_ref();
-
-        match lockfile {
-            Some(l) => Ok(Some(l.clone())),
-            None => Ok(None),
-        }
-    }
 }
 
 fn main() {
@@ -68,7 +44,7 @@ fn main() {
         Receiver<events::LockfileEvent>,
     ) = channel();
 
-    lockfile::watch_lockfile(&LOCKFILE, tx);
+    lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
     events::listen(&LOCKFILE, rx);
 
     let addr = "127.0.0.1:7878";
