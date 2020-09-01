@@ -1,14 +1,17 @@
 use crate::Lockfile;
 use native_tls::TlsConnector;
+use std::thread;
+use std::time::Duration;
 use websocket::client::sync::Client;
 use websocket::header::{Authorization, Basic, Headers};
 use websocket::stream::sync::{TcpStream, TlsStream};
-use websocket::{ClientBuilder, Message, OwnedMessage};
+use websocket::{ClientBuilder, Message, OwnedMessage, WebSocketError};
 
 pub struct LeagueEventsWatcher {
   status: LeagueSubscriberStatus,
   lockfile: &'static Lockfile,
   client: Option<Client<TlsStream<TcpStream>>>,
+  retries: usize,
 }
 
 impl LeagueEventsWatcher {
@@ -17,6 +20,7 @@ impl LeagueEventsWatcher {
       status: LeagueSubscriberStatus::Idle,
       lockfile,
       client: None,
+      retries: 0,
     }
   }
 
@@ -53,8 +57,29 @@ impl LeagueEventsWatcher {
       .unwrap()
       .add_protocol("wamp")
       .custom_headers(&headers)
-      .connect_secure(Some(connector))
-      .unwrap();
+      .connect_secure(Some(connector));
+
+    let client = match client {
+      Ok(c) => c,
+      Err(WebSocketError::IoError(err)) => {
+        let timeout = Duration::from_millis(500);
+        thread::sleep(timeout);
+
+        if self.retries >= 3 {
+          panic!("Unable to connect to websocket: {:?}", err);
+        }
+
+        self.retries += 1;
+        debug!(
+          "Unable to connect to websocket, retrying for {} time",
+          self.retries
+        );
+
+        return self.connect();
+      }
+      Err(e) => panic!("{:?}", e),
+    };
+
     self.client = Some(client);
     self.status = LeagueSubscriberStatus::Connected;
 
