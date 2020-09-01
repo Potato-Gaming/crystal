@@ -88,8 +88,6 @@ impl Lockfile {
             || prev.b64_auth != current.b64_auth
             || prev.port != current.port;
 
-        debug!("Did it change? {}", changed);
-
         Ok(changed)
     }
 }
