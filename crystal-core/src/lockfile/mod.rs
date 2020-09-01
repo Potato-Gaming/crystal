@@ -57,6 +57,41 @@ impl Lockfile {
 
         Ok(())
     }
+
+    pub fn did_change(&self) -> Result<bool> {
+        let prev = self.get_details()?;
+        self.update()?;
+        let current = self.get_details()?;
+
+        if prev.is_none() && current.is_none() {
+            return Ok(false);
+        }
+
+        if prev.is_none() && current.is_some() {
+            return Ok(true);
+        }
+
+        if prev.is_some() && current.is_none() {
+            return Ok(true);
+        }
+
+        let prev = match prev {
+            Some(p) => p,
+            None => unreachable!(),
+        };
+        let current = match current {
+            Some(c) => c,
+            None => unreachable!(),
+        };
+
+        let changed = prev.address != current.address
+            || prev.b64_auth != current.b64_auth
+            || prev.port != current.port;
+
+        debug!("Did it change? {}", changed);
+
+        Ok(changed)
+    }
 }
 
 pub fn watch_lockfile(
@@ -106,17 +141,20 @@ pub fn watch_lockfile(
             match event {
                 notify::DebouncedEvent::Create { .. } => {
                     debug!("Lockfile created");
-                    LOCKFILE.update().unwrap();
-                    let _ = ev_tx.send(events::LockfileEvent::Restart);
+                    if lockfile.did_change().unwrap() {
+                        let _ = ev_tx.send(events::LockfileEvent::Restart);
+                    }
                 }
                 notify::DebouncedEvent::Write { .. } => {
                     debug!("Lockfile written");
-                    LOCKFILE.update().unwrap();
-                    let _ = ev_tx.send(events::LockfileEvent::Restart);
+                    if lockfile.did_change().unwrap() {
+                        let _ = ev_tx.send(events::LockfileEvent::Restart);
+                    }
                 }
                 notify::DebouncedEvent::Remove { .. } => {
                     debug!("Lockfile deleted");
                     lockfile.release().unwrap();
+                    let _ = ev_tx.send(events::LockfileEvent::Stop);
                 }
                 notify::DebouncedEvent::NoticeWrite { .. } => {
                     debug!("Notice write");

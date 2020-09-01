@@ -20,6 +20,10 @@ pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>) {
           sub.disconnect();
           sub.connect().unwrap();
         }
+        Ok(LockfileEvent::Stop) => {
+          debug!("Stopping events listener");
+          sub.disconnect();
+        }
         Err(e) => {
           panic!("Event listener broke!: {:?}", e);
         }
@@ -31,4 +35,5 @@ pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>) {
 pub enum LockfileEvent {
   Start,
   Restart,
+  Stop,
 }
