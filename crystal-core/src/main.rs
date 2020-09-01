@@ -44,7 +44,7 @@ fn main() {
         Receiver<events::LockfileEvent>,
     ) = channel();
 
-    lockfile::watch_lockfile(&LOCKFILE, tx);
+    lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
     events::listen(&LOCKFILE, rx);
 
     let addr = "127.0.0.1:7878";
