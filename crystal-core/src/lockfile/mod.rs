@@ -50,9 +50,11 @@ pub fn watch_lockfile(
     let event_timeout = Duration::from_millis(500);
     let (tx, rx) = channel();
 
-    let mut watcher: RecommendedWatcher = Watcher::new(tx, event_timeout).context(WatcherIssue)?;
+    let mut watcher: RecommendedWatcher = Watcher::new(tx, event_timeout)
+        .context(WatcherIssue)
+        .unwrap();
 
-    let watcher_thread = thread::spawn(move || -> Result<()> {
+    thread::spawn(move || -> Result<()> {
         let rx = rx;
         let mut league_client_started = false;
 
@@ -109,8 +111,6 @@ pub fn watch_lockfile(
             };
         }
     });
-
-    watcher_thread.join().unwrap()?;
 
     Ok(())
 }
