@@ -31,6 +31,77 @@ impl LeagueEventsWatcher {
       return Ok(());
     }
 
+    self.init_client().unwrap();
+
+    let client = match &mut self.client {
+      Some(client) => client,
+      None => {
+        return Ok(());
+      }
+    };
+
+    self.status = LeagueSubscriberStatus::Connected;
+    let message = Message::text("[5,\"OnJsonApiEvent\"]");
+
+    match client.send_message(&message) {
+      Ok(_) => {}
+      Err(e) => {
+        debug!("Unable to send a message, closing connection: {:?}", e);
+        self.disconnect();
+
+        return Ok(());
+      }
+    };
+
+    for message in client.incoming_messages() {
+      let message = match message {
+        Ok(m) => m,
+        Err(e) => {
+          debug!("Error receiving message: {:?}", e);
+          self.disconnect();
+          return Ok(());
+        }
+      };
+
+      match message {
+        OwnedMessage::Text(txt) => {
+          debug!("Message: {:?}", txt);
+        }
+        OwnedMessage::Ping(data) => {
+          debug!("Ping: {:?}", data);
+        }
+        OwnedMessage::Pong(data) => {
+          debug!("Pong: {:?}", data);
+        }
+        OwnedMessage::Binary(bin) => {
+          debug!("Binary: {:?}", bin);
+        }
+        OwnedMessage::Close(_) => {
+          debug!("Closed connection");
+          self.status = LeagueSubscriberStatus::Idle;
+          return Ok(());
+        }
+      }
+    }
+
+    debug!("Listener done");
+
+    Ok(())
+  }
+
+  pub fn disconnect(&mut self) {
+    let client = match &self.client {
+      Some(c) => c,
+      None => {
+        return;
+      }
+    };
+
+    self.status = LeagueSubscriberStatus::Idle;
+    client.shutdown().unwrap();
+  }
+
+  fn init_client(&mut self) -> Result<(), ()> {
     debug!("Subscribing to League Client");
     let lockfile = self.lockfile.get_details().unwrap();
 
@@ -75,73 +146,15 @@ impl LeagueEventsWatcher {
           self.retries
         );
 
-        return self.connect();
+        return self.init_client();
       }
       Err(e) => panic!("{:?}", e),
     };
 
     self.client = Some(client);
     self.retries = 0;
-    self.status = LeagueSubscriberStatus::Connected;
-
-    let message = Message::text("[5,\"OnJsonApiEvent\"]");
-
-    let client = match &mut self.client {
-      Some(client) => client,
-      None => {
-        debug!("This should not happen!");
-        return Ok(());
-      }
-    };
-
-    client.send_message(&message).unwrap();
-
-    for message in client.incoming_messages() {
-      let message = match message {
-        Ok(m) => m,
-        Err(e) => {
-          debug!("Error receiving message: {:?}", e);
-          self.status = LeagueSubscriberStatus::Errored;
-          return Ok(());
-        }
-      };
-
-      match message {
-        OwnedMessage::Text(txt) => {
-          debug!("Message: {:?}", txt);
-        }
-        OwnedMessage::Ping(data) => {
-          debug!("Ping: {:?}", data);
-        }
-        OwnedMessage::Pong(data) => {
-          debug!("Pong: {:?}", data);
-        }
-        OwnedMessage::Binary(bin) => {
-          debug!("Binary: {:?}", bin);
-        }
-        OwnedMessage::Close(_) => {
-          debug!("Closed connection");
-          self.status = LeagueSubscriberStatus::Idle;
-          return Ok(());
-        }
-      }
-    }
-
-    debug!("Listener done");
 
     Ok(())
-  }
-
-  pub fn disconnect(&mut self) {
-    let client = match &self.client {
-      Some(c) => c,
-      None => {
-        return;
-      }
-    };
-
-    self.status = LeagueSubscriberStatus::Idle;
-    client.shutdown().unwrap();
   }
 }
 
