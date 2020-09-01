@@ -1,8 +1,10 @@
-use crate::Lockfile;
-use native_tls::TlsConnector;
+use crate::lockfile::{Lockfile, LockfileError};
+use native_tls::{Error as TlsError, TlsConnector};
+use snafu::{Backtrace, OptionExt, ResultExt, Snafu};
 use std::thread;
 use std::time::Duration;
 use websocket::client::sync::Client;
+use websocket::client::ParseError;
 use websocket::header::{Authorization, Basic, Headers};
 use websocket::stream::sync::{TcpStream, TlsStream};
 use websocket::{ClientBuilder, Message, OwnedMessage, WebSocketError};
@@ -24,14 +26,14 @@ impl LeagueEventsWatcher {
     }
   }
 
-  pub fn connect(&mut self) -> Result<(), ()> {
+  pub fn connect(&mut self) -> Result<()> {
     if self.status == LeagueSubscriberStatus::Connected {
       debug!("Attempting to connect, but connection already started");
 
       return Ok(());
     }
 
-    self.init_client().unwrap();
+    self.init_client()?;
 
     let client = match &mut self.client {
       Some(client) => client,
@@ -47,7 +49,7 @@ impl LeagueEventsWatcher {
       Ok(_) => {}
       Err(e) => {
         debug!("Unable to send a message, closing connection: {:?}", e);
-        self.disconnect();
+        self.disconnect()?;
 
         return Ok(());
       }
@@ -58,7 +60,7 @@ impl LeagueEventsWatcher {
         Ok(m) => m,
         Err(e) => {
           debug!("Error receiving message: {:?}", e);
-          self.disconnect();
+          self.disconnect()?;
           return Ok(());
         }
       };
@@ -89,31 +91,33 @@ impl LeagueEventsWatcher {
     Ok(())
   }
 
-  pub fn disconnect(&mut self) {
+  pub fn disconnect(&mut self) -> Result<()> {
     let client = match &self.client {
       Some(c) => c,
       None => {
-        return;
+        return Ok(());
       }
     };
 
     self.status = LeagueSubscriberStatus::Idle;
-    client.shutdown().unwrap();
+    client.shutdown().context(Shutdown)?;
+
+    Ok(())
   }
 
-  fn init_client(&mut self) -> Result<(), ()> {
+  fn init_client(&mut self) -> Result<()> {
     debug!("Subscribing to League Client");
-    let lockfile = self.lockfile.get_details().unwrap();
+    let lockfile = self.lockfile.get_details().context(LockfileIssue)?;
 
     if lockfile.is_none() {
       debug!("Lockfile is not ready");
       return Ok(());
     }
 
-    let l = lockfile.unwrap();
+    let l = lockfile.context(NoLockfile)?;
     let mut builder = TlsConnector::builder();
     let builder = builder.danger_accept_invalid_certs(true);
-    let connector = builder.build().unwrap();
+    let connector = builder.build().context(TlsIssue)?;
 
     let mut headers = Headers::new();
     headers.set(Authorization(Basic {
@@ -125,7 +129,7 @@ impl LeagueEventsWatcher {
     debug!("Connecting to {:?}", addr);
 
     let client = ClientBuilder::new(&addr)
-      .unwrap()
+      .context(ParseClient)?
       .add_protocol("wamp")
       .custom_headers(&headers)
       .connect_secure(Some(connector));
@@ -162,5 +166,36 @@ impl LeagueEventsWatcher {
 pub enum LeagueSubscriberStatus {
   Idle,
   Connected,
-  Errored,
+}
+
+pub type Result<T, E = LeagueSubscriberError> = std::result::Result<T, E>;
+
+#[derive(Debug, Snafu)]
+pub enum LeagueSubscriberError {
+  #[snafu(display("Something went wrong with the lockfile: {}", source))]
+  LockfileIssue {
+    source: LockfileError,
+    backtrace: Backtrace,
+  },
+
+  #[snafu(display("No lockfile"))]
+  NoLockfile { backtrace: Backtrace },
+
+  #[snafu(display("Something went wrong with the TLS: {}", source))]
+  TlsIssue {
+    source: TlsError,
+    backtrace: Backtrace,
+  },
+
+  #[snafu(display("Something went wrong parsing the websocket client: {}", source))]
+  ParseClient {
+    source: ParseError,
+    backtrace: Backtrace,
+  },
+
+  #[snafu(display("Could not shotdown client: {}", source))]
+  Shutdown {
+    source: std::io::Error,
+    backtrace: Backtrace,
+  },
 }
