@@ -81,6 +81,7 @@ impl LeagueEventsWatcher {
     };
 
     self.client = Some(client);
+    self.retries = 0;
     self.status = LeagueSubscriberStatus::Connected;
 
     let message = Message::text("[5,\"OnJsonApiEvent\"]");
