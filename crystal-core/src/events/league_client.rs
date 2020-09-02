@@ -1,6 +1,8 @@
+use super::league_events::{parse_event_from, LeagueEvent};
 use crate::lockfile::{Lockfile, LockfileError};
 use native_tls::{Error as TlsError, TlsConnector};
 use snafu::{Backtrace, OptionExt, ResultExt, Snafu};
+use std::sync::mpsc::Sender;
 use std::thread;
 use std::time::Duration;
 use websocket::client::sync::Client;
@@ -14,15 +16,17 @@ pub struct LeagueEventsWatcher {
   lockfile: &'static Lockfile,
   client: Option<Client<TlsStream<TcpStream>>>,
   retries: usize,
+  tx: Sender<LeagueEvent>,
 }
 
 impl LeagueEventsWatcher {
-  pub fn new(lockfile: &'static Lockfile) -> Self {
+  pub fn new(lockfile: &'static Lockfile, tx: Sender<LeagueEvent>) -> Self {
     Self {
       status: LeagueSubscriberStatus::Idle,
       lockfile,
       client: None,
       retries: 0,
+      tx,
     }
   }
 
@@ -67,7 +71,10 @@ impl LeagueEventsWatcher {
 
       match message {
         OwnedMessage::Text(txt) => {
-          trace!("Message: {:?}", txt);
+          // trace!("Message: {:?}", txt);
+          let event = parse_event_from(&txt).unwrap();
+          info!("Event: {:?}", event);
+          // self.tx.send(event).unwrap();
         }
         OwnedMessage::Ping(data) => {
           trace!("Ping: {:?}", data);

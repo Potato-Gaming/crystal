@@ -13,6 +13,9 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
+#[macro_use]
+extern crate strum_macros;
+
 use crate::handlers::empty_handler;
 use dotenv::dotenv;
 use gotham::middleware::logger::RequestLogger;
@@ -44,8 +47,11 @@ fn main() {
         Receiver<events::LockfileEvent>,
     ) = channel();
 
+    let (tx_ws, rx_ws): (Sender<events::LeagueEvent>, Receiver<events::LeagueEvent>) = channel();
+
     lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
-    events::listen(&LOCKFILE, rx);
+    events::listen(&LOCKFILE, rx, tx_ws);
+    events::start_websocket_server(rx_ws);
 
     let addr = "127.0.0.1:7878";
     info!("Listening for requests at http://{}", addr);

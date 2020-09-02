@@ -1,11 +1,12 @@
 use super::league_client::LeagueEventsWatcher;
+use super::league_events::LeagueEvent;
 use crate::Lockfile;
-use std::sync::mpsc::Receiver;
+use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 
-pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>) {
+pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>, tx: Sender<LeagueEvent>) {
   thread::spawn(move || {
-    let mut sub = LeagueEventsWatcher::new(lockfile);
+    let mut sub = LeagueEventsWatcher::new(lockfile, tx);
 
     sub.connect().unwrap();
 
