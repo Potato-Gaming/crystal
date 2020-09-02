@@ -12,16 +12,16 @@ pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>) {
     loop {
       match rx.recv() {
         Ok(LockfileEvent::Start) => {
-          debug!("Starting events listener");
+          info!("Starting events listener");
           sub.connect().unwrap();
         }
         Ok(LockfileEvent::Restart) => {
-          debug!("Restarting events listener");
+          info!("Restarting events listener");
           sub.disconnect().unwrap();
           sub.connect().unwrap();
         }
         Ok(LockfileEvent::Stop) => {
-          debug!("Stopping events listener");
+          info!("Stopping events listener");
           sub.disconnect().unwrap();
         }
         Err(e) => {

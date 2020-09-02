@@ -67,16 +67,16 @@ impl LeagueEventsWatcher {
 
       match message {
         OwnedMessage::Text(txt) => {
-          debug!("Message: {:?}", txt);
+          trace!("Message: {:?}", txt);
         }
         OwnedMessage::Ping(data) => {
-          debug!("Ping: {:?}", data);
+          trace!("Ping: {:?}", data);
         }
         OwnedMessage::Pong(data) => {
-          debug!("Pong: {:?}", data);
+          trace!("Pong: {:?}", data);
         }
         OwnedMessage::Binary(bin) => {
-          debug!("Binary: {:?}", bin);
+          trace!("Binary: {:?}", bin);
         }
         OwnedMessage::Close(_) => {
           debug!("Closed connection");
@@ -86,7 +86,7 @@ impl LeagueEventsWatcher {
       }
     }
 
-    debug!("Listener done");
+    info!("Listener done");
 
     Ok(())
   }
@@ -106,11 +106,11 @@ impl LeagueEventsWatcher {
   }
 
   fn init_client(&mut self) -> Result<()> {
-    debug!("Subscribing to League Client");
+    trace!("Subscribing to League Client");
     let lockfile = self.lockfile.get_details().context(LockfileIssue)?;
 
     if lockfile.is_none() {
-      debug!("Lockfile is not ready");
+      info!("Lockfile is not ready");
       return Ok(());
     }
 
@@ -126,7 +126,7 @@ impl LeagueEventsWatcher {
     }));
 
     let addr = format!("wss://{}:{}/", l.address, l.port);
-    debug!("Connecting to {:?}", addr);
+    info!("Connecting to {:?}", addr);
 
     let client = ClientBuilder::new(&addr)
       .context(ParseClient)?
@@ -145,7 +145,7 @@ impl LeagueEventsWatcher {
         }
 
         self.retries += 1;
-        debug!(
+        warn!(
           "Unable to connect to websocket, retrying for {} time",
           self.retries
         );

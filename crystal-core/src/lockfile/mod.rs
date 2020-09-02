@@ -103,6 +103,7 @@ pub fn watch_lockfile(
         .context(WatcherIssue)
         .unwrap();
 
+    trace!("Spawning lockfile watcher thread");
     thread::spawn(move || {
         let rx = rx;
         let mut league_client_started = false;
@@ -121,7 +122,7 @@ pub fn watch_lockfile(
             }
         }
 
-        debug!("League Client Detected!");
+        trace!("League Client Detected");
         let lockfile_path = LeagueClientConnector::get_path()
             .context(LeagueConnectorIssue)
             .unwrap();
@@ -138,27 +139,27 @@ pub fn watch_lockfile(
 
             match event {
                 notify::DebouncedEvent::Create { .. } => {
-                    debug!("Lockfile created");
                     if lockfile.did_change().unwrap() {
+                        info!("Lockfile created");
                         let _ = ev_tx.send(events::LockfileEvent::Restart);
                     }
                 }
                 notify::DebouncedEvent::Write { .. } => {
-                    debug!("Lockfile written");
                     if lockfile.did_change().unwrap() {
+                        info!("Lockfile written");
                         let _ = ev_tx.send(events::LockfileEvent::Restart);
                     }
                 }
                 notify::DebouncedEvent::Remove { .. } => {
-                    debug!("Lockfile deleted");
+                    info!("Lockfile deleted");
                     lockfile.release().unwrap();
                     let _ = ev_tx.send(events::LockfileEvent::Stop);
                 }
                 notify::DebouncedEvent::NoticeWrite { .. } => {
-                    debug!("Notice write");
+                    info!("Notice write");
                 }
                 notify::DebouncedEvent::NoticeRemove { .. } => {
-                    debug!("Notice remove");
+                    info!("Notice remove");
                 }
                 _ => {
                     unimplemented!();

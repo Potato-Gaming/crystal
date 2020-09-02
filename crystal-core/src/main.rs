@@ -48,7 +48,7 @@ fn main() {
     events::listen(&LOCKFILE, rx);
 
     let addr = "127.0.0.1:7878";
-    println!("Listening for requests at http://{}", addr);
+    info!("Listening for requests at http://{}", addr);
     gotham::start(addr, router())
 }
 
