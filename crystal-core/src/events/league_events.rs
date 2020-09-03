@@ -1,3 +1,4 @@
+use league_client::models::LolChampSelectChampSelectSummoner;
 use regex::RegexSet;
 use serde_json::{Error as SerdeJsonError, Value};
 use snafu::{Backtrace, ResultExt, Snafu};
@@ -17,6 +18,15 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
   let raw_event: Value = serde_json::from_str(str_event).context(ParseJson)?;
   trace!("Parsed event: {:?}", raw_event);
 
+  let event_data = raw_event[0];
+  let uri: String = event_data["uri"];
+  let data = match uri {
+    ""
+    _ => {
+     unimplemented!(); 
+    }
+  };
+
   Ok(LeagueEvent::NotTracked)
 }
 
@@ -26,7 +36,7 @@ pub enum LeagueEvent {
   LobbyExit,
   ChampionSelectStart,
   ChampionSelectDone,
-  ChampSelected,
+  ChampionSelectBySlotId(u8, LolChampSelectChampSelectSummoner),
   NotTracked,
 }
 
