@@ -1,5 +1,5 @@
 mod league_client;
-pub use league_client::*;
+pub use self::league_client::*;
 mod league_events;
 pub use league_events::*;
 mod league_server;

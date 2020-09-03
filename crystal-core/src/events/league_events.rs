@@ -1,5 +1,6 @@
-use league_client::models::LolChampSelectChampSelectSummoner;
+use league_client::models::{LolChampSelectChampSelectSession, LolChampSelectChampSelectSummoner};
 use regex::RegexSet;
+use route_recognizer::Router;
 use serde_json::{Error as SerdeJsonError, Value};
 use snafu::{Backtrace, ResultExt, Snafu};
 
@@ -7,6 +8,7 @@ use snafu::{Backtrace, ResultExt, Snafu};
 /// information that Crystal is interested in.
 pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
   let set = RegexSet::new(&[r"/lol-champ-select/", r"/lol-champ-select-legacy/"]).unwrap();
+  let mut router = Router::new();
 
   let matches: Vec<_> = set.matches(str_event).into_iter().collect();
 
@@ -18,16 +20,46 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
   let raw_event: Value = serde_json::from_str(str_event).context(ParseJson)?;
   trace!("Parsed event: {:?}", raw_event);
 
-  let event_data = raw_event[0];
-  let uri: String = event_data["uri"];
-  let data = match uri {
-    ""
-    _ => {
-     unimplemented!(); 
+  let event_data = &raw_event[2];
+  let uri: String = event_data["uri"].to_string();
+
+  trace!("URI: {}", uri);
+
+  router.add(
+    "/lol-champ-select/v1/summoner/:slot",
+    AllowedRoutes::ChampSelectBySlot,
+  );
+
+  router.add(
+    "/lol-champ-select/v1/session",
+    AllowedRoutes::ChampSelectSession,
+  );
+
+  let recognized = match router.recognize(&uri) {
+    Ok(r) => r,
+    Err(e) => {
+      debug!("{:?}", e);
+      return Ok(LeagueEvent::NotTracked);
     }
   };
 
-  Ok(LeagueEvent::NotTracked)
+  match recognized.handler {
+    AllowedRoutes::ChampSelectBySlot => {
+      trace!("Champ Select by Slot {:?}", recognized.params);
+
+      return Ok(LeagueEvent::ChampionSelectBySlotId(
+        0,
+        LolChampSelectChampSelectSummoner::new(),
+      ));
+    }
+    AllowedRoutes::ChampSelectSession => {
+      trace!("Champ Select Session");
+
+      return Ok(LeagueEvent::ChampionSelectSesion(
+        LolChampSelectChampSelectSession::new(),
+      ));
+    }
+  };
 }
 
 #[derive(Debug, Display)]
@@ -37,7 +69,14 @@ pub enum LeagueEvent {
   ChampionSelectStart,
   ChampionSelectDone,
   ChampionSelectBySlotId(u8, LolChampSelectChampSelectSummoner),
+  ChampionSelectSesion(LolChampSelectChampSelectSession),
   NotTracked,
+}
+
+#[derive(Debug, Display)]
+pub enum AllowedRoutes {
+  ChampSelectBySlot,
+  ChampSelectSession,
 }
 
 pub struct LeagueApiEvent {
