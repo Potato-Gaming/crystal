@@ -1,32 +1,27 @@
 use league_client::models::{LolChampSelectChampSelectSession, LolChampSelectChampSelectSummoner};
-use regex::RegexSet;
 use route_recognizer::Router;
+use serde::Deserialize;
 use serde_json::{Error as SerdeJsonError, Value};
 use snafu::{Backtrace, ResultExt, Snafu};
 
 /// Naive event parser from a string. Gets a string with the event and parses the relevant
 /// information that Crystal is interested in.
 pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
-  let set = RegexSet::new(&[r"/lol-champ-select/", r"/lol-champ-select-legacy/"]).unwrap();
   let mut router = Router::new();
 
-  let matches: Vec<_> = set.matches(str_event).into_iter().collect();
-
-  if matches.len() == 0 {
-    trace!("Event is not relevant");
-    return Ok(LeagueEvent::NotTracked);
-  }
-
   let raw_event: Value = serde_json::from_str(str_event).context(ParseJson)?;
-  trace!("Parsed event: {:?}", raw_event);
 
   let event_data = &raw_event[2];
-  let uri: String = event_data["uri"].to_string();
-
-  trace!("URI: {}", uri);
+  let uri: &str = match event_data["uri"].as_str() {
+    Some(u) => u,
+    None => {
+      trace!("Invalid event");
+      return Ok(LeagueEvent::NotTracked);
+    }
+  };
 
   router.add(
-    "/lol-champ-select/v1/summoner/:slot",
+    "/lol-champ-select/v1/summoners/:slot",
     AllowedRoutes::ChampSelectBySlot,
   );
 
@@ -35,7 +30,7 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
     AllowedRoutes::ChampSelectSession,
   );
 
-  let recognized = match router.recognize(&uri) {
+  let recognized = match router.recognize(uri) {
     Ok(r) => r,
     Err(e) => {
       debug!("{:?}", e);
@@ -45,30 +40,40 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
 
   match recognized.handler {
     AllowedRoutes::ChampSelectBySlot => {
-      trace!("Champ Select by Slot {:?}", recognized.params);
+      info!("Champ Select by Slot {:?}", recognized.params);
+      let reparsed =
+        serde_json::from_str::<LeagueEventData<LolChampSelectChampSelectSummoner>>(str_event)
+          .context(ParseJson)?;
 
-      return Ok(LeagueEvent::ChampionSelectBySlotId(
-        0,
-        LolChampSelectChampSelectSummoner::new(),
-      ));
+      let slot: usize = recognized.params["slot"].parse().unwrap();
+
+      return Ok(LeagueEvent::ChampionSelectBySlotId(slot, reparsed.2.data));
     }
     AllowedRoutes::ChampSelectSession => {
-      trace!("Champ Select Session");
+      info!("Champ Select Session");
 
-      return Ok(LeagueEvent::ChampionSelectSesion(
-        LolChampSelectChampSelectSession::new(),
-      ));
+      let reparsed =
+        serde_json::from_str::<LeagueEventData<LolChampSelectChampSelectSession>>(str_event)
+          .context(ParseJson)?;
+
+      return Ok(LeagueEvent::ChampionSelectSesion(reparsed.2.data));
     }
   };
 }
 
+type LeagueEventData<T> = (i32, String, EventData<T>);
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct EventData<T> {
+  pub uri: String,
+  pub event_type: String,
+  pub data: T,
+}
+
 #[derive(Debug, Display)]
 pub enum LeagueEvent {
-  LobbyEnter,
-  LobbyExit,
-  ChampionSelectStart,
-  ChampionSelectDone,
-  ChampionSelectBySlotId(u8, LolChampSelectChampSelectSummoner),
+  ChampionSelectBySlotId(usize, LolChampSelectChampSelectSummoner),
   ChampionSelectSesion(LolChampSelectChampSelectSession),
   NotTracked,
 }
@@ -77,29 +82,6 @@ pub enum LeagueEvent {
 pub enum AllowedRoutes {
   ChampSelectBySlot,
   ChampSelectSession,
-}
-
-pub struct LeagueApiEvent {
-  eventType: LeagueEventType,
-  uri: String,
-  data: LeagueEventData,
-}
-
-// There's definitely more event types.
-#[derive(Debug, Display)]
-pub enum LeagueEventType {
-  Create,
-  Update,
-  Delete,
-}
-
-pub struct LeagueEventData {
-  action: LeagueEventAction,
-}
-
-#[derive(Debug, Display)]
-pub enum LeagueEventAction {
-  Idle,
 }
 
 pub type Result<T, E = LeagueEventError> = std::result::Result<T, E>;
