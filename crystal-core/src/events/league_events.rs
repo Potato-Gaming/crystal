@@ -20,7 +20,6 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
     }
   };
 
-  debug!("Uri event: {}", uri);
   trace!("Event data: {:?}", event_data["data"]);
 
   router.add(
