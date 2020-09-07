@@ -1,7 +1,7 @@
 use super::league_client::LeagueEventsWatcher;
 use super::league_events::LeagueEvent;
 use crate::Lockfile;
-use std::sync::mpsc::{Receiver, Sender};
+use crossbeam::channel::{Receiver, Sender};
 use std::thread;
 
 pub fn listen(lockfile: &'static Lockfile, rx: Receiver<LockfileEvent>, tx: Sender<LeagueEvent>) {

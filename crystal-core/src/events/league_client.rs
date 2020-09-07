@@ -1,8 +1,8 @@
 use super::league_events::{parse_event_from, LeagueEvent};
 use crate::lockfile::{Lockfile, LockfileError};
+use crossbeam::channel::Sender;
 use native_tls::{Error as TlsError, TlsConnector};
 use snafu::{Backtrace, OptionExt, ResultExt, Snafu};
-use std::sync::mpsc::Sender;
 use std::thread;
 use std::time::Duration;
 use websocket::client::sync::Client;
@@ -73,7 +73,12 @@ impl LeagueEventsWatcher {
         OwnedMessage::Text(txt) => {
           let event = parse_event_from(&txt).unwrap();
           debug!("Event {:?}", event);
-          self.tx.send(event).unwrap();
+          match self.tx.send(event) {
+            Ok(_) => {}
+            Err(_) => {
+              warn!("Could not send message");
+            }
+          }
         }
         OwnedMessage::Ping(data) => {
           trace!("Ping: {:?}", data);

@@ -17,13 +17,13 @@ extern crate lazy_static;
 extern crate strum_macros;
 
 use crate::handlers::empty_handler;
+use crossbeam::channel::{unbounded, Receiver, Sender};
 use dotenv::dotenv;
 use gotham::middleware::logger::RequestLogger;
 use gotham::pipeline::new_pipeline;
 use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set};
 use gotham::router::builder::*;
 use gotham::router::Router;
-use std::sync::mpsc::{channel, Receiver, Sender};
 
 mod events;
 mod handlers;
@@ -45,15 +45,17 @@ fn main() {
     let (tx, rx): (
         Sender<events::LockfileEvent>,
         Receiver<events::LockfileEvent>,
-    ) = channel();
+    ) = unbounded();
 
-    let (tx_ws, rx_ws): (Sender<events::LeagueEvent>, Receiver<events::LeagueEvent>) = channel();
+    let (tx_ws, rx_ws): (Sender<events::LeagueEvent>, Receiver<events::LeagueEvent>) = unbounded();
 
     lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
     events::listen(&LOCKFILE, rx, tx_ws);
     events::start_websocket_server(rx_ws);
 
-    let addr = "127.0.0.1:7878";
+    let crystal_port = std::env::var("CRYSTAL_PORT").unwrap_or(String::from("7878"));
+
+    let addr = format!("127.0.0.1:{}", crystal_port);
     info!("Listening for requests at http://{}", addr);
     gotham::start(addr, router())
 }

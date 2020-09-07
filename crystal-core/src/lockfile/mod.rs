@@ -1,15 +1,15 @@
 use crate::events;
+use crate::LOCKFILE;
+use crossbeam::channel::Sender;
 use crossbeam::sync::{ShardedLock, ShardedLockReadGuard, ShardedLockWriteGuard};
 use league_client_connector::RiotLockFile;
 use league_client_connector::{LeagueClientConnector, LeagueConnectorError};
 use notify::{Error as NotifyError, RecommendedWatcher, RecursiveMode, Watcher};
 use snafu::{ResultExt, Snafu};
-use std::sync::mpsc::{channel, RecvError, Sender};
+use std::sync::mpsc::{channel, RecvError};
 use std::sync::PoisonError;
 use std::thread;
 use std::time::Duration;
-
-use crate::LOCKFILE;
 
 #[derive(StateData)]
 pub struct Lockfile {
