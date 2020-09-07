@@ -20,6 +20,9 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
     }
   };
 
+  debug!("Uri event: {}", uri);
+  trace!("Event data: {:?}", event_data["data"]);
+
   router.add(
     "/lol-champ-select/v1/summoners/:slot",
     AllowedRoutes::ChampSelectBySlot,
@@ -71,7 +74,7 @@ struct EventData<T> {
   pub data: T,
 }
 
-#[derive(Debug, Display)]
+#[derive(Debug, Display, Serialize)]
 pub enum LeagueEvent {
   ChampionSelectBySlotId(usize, LolChampSelectChampSelectSummoner),
   ChampionSelectSesion(LolChampSelectChampSelectSession),

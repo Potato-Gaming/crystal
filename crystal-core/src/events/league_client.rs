@@ -71,10 +71,9 @@ impl LeagueEventsWatcher {
 
       match message {
         OwnedMessage::Text(txt) => {
-          // trace!("Message: {:?}", txt);
           let event = parse_event_from(&txt).unwrap();
-          trace!("Event {:?}", event);
-          // self.tx.send(event).unwrap();
+          debug!("Event {:?}", event);
+          self.tx.send(event).unwrap();
         }
         OwnedMessage::Ping(data) => {
           trace!("Ping: {:?}", data);
