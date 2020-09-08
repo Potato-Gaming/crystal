@@ -1,0 +1,47 @@
+{
+  "name": "crystal-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Crystal Application",
+  "main": "index.js",
+  "author": "Victor Quiroz Castro <victorhqc@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start:web": "react-scripts start",
+    "start:tauri": "npm run tauri dev",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "info": "npm run tauri info",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.55",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.3",
+    "tauri": "^0.12.0",
+    "typescript": "^3.7.5"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
