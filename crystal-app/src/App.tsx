@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { listen } from 'tauri/api/event';
+import { LeagueEvent } from './utils/types';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    const event: LeagueEvent = 'ChampionSelectBySlotId';
+    listen<object>(event, (payload) => {
+      console.log('PAYLOAD', payload);
+    });
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">

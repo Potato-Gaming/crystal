@@ -1,55 +1,79 @@
 #![cfg_attr(
-  all(not(debug_assertions), target_os = "windows"),
-  windows_subsystem = "windows"
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
 )]
 
+#[macro_use]
+extern crate log;
+
+use crossbeam::channel::{unbounded, Receiver, Sender};
+use crystal_core::LOCKFILE;
+use crystal_core::{events, lockfile};
 use dotenv::dotenv;
-use std::env;
-use std::process::Command;
 use std::thread;
+use tauri::WebviewMut;
 
 mod cmd;
 
 fn main() {
-  dotenv().ok();
-  start_crystal_bin();
+    #[cfg(target_family = "unix")]
+    openssl_probe::init_ssl_cert_env_vars();
 
-  tauri::AppBuilder::new()
-    .invoke_handler(|_webview, arg| {
-      use cmd::Cmd::*;
-      match serde_json::from_str(arg) {
-        Err(e) => Err(e.to_string()),
-        Ok(command) => {
-          match command {
-            // definitions for your custom commands from Cmd here
-            MyCustomCommand { argument } => {
-              //  your command code
-              println!("{}", argument);
+    dotenv().ok();
+    pretty_env_logger::init();
+
+    let (tx_ws, rx_ws): (Sender<events::LeagueEvent>, Receiver<events::LeagueEvent>) = unbounded();
+    bootstrap_crystal_core(tx_ws);
+
+    tauri::AppBuilder::new()
+        .setup(move |webview, _source| {
+            let webview = webview.clone().as_mut();
+            let rx_ws = rx_ws.clone();
+
+            emit_league_events(rx_ws, webview);
+        })
+        .invoke_handler(|_webview, arg| {
+            use cmd::Cmd::*;
+            match serde_json::from_str(arg) {
+                Err(e) => Err(e.to_string()),
+                Ok(command) => {
+                    match command {
+                        // definitions for your custom commands from Cmd here
+                        MyCustomCommand { argument } => {
+                            //  your command code
+                            println!("{}", argument);
+                        }
+                    }
+                    Ok(())
+                }
             }
-          }
-          Ok(())
-        }
-      }
-    })
-    .build()
-    .run();
+        })
+        .build()
+        .run();
 }
 
-fn start_crystal_bin() {
-  let binary_path = env::var("CRYSTAL_CORE_BIN");
-  let binary_path = match binary_path {
-    Ok(b) => b,
-    Err(_) => {
-      println!("CRYSTAL_CORE_BIN not found, make sure crystal-core is running");
-      return;
-    }
-  };
+fn bootstrap_crystal_core(tx_ws: Sender<events::LeagueEvent>) {
+    let (tx, rx): (
+        Sender<events::LockfileEvent>,
+        Receiver<events::LockfileEvent>,
+    ) = unbounded();
 
-  thread::spawn(move || {
-    let mut child = Command::new(binary_path)
-      .spawn()
-      .expect("Failed to spawn crystal-core");
-    let ecode = child.wait().expect("Failed to wait on crystal-core");
-    println!("Succeeded: {}", ecode.success());
-  });
+    lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
+    events::listen(&LOCKFILE, rx, tx_ws);
+}
+
+fn emit_league_events(rx: Receiver<events::LeagueEvent>, webview: WebviewMut) {
+    thread::spawn(move || {
+        let rx = rx;
+        let mut webview = webview;
+
+        loop {
+            let event = rx.recv().unwrap();
+            if event.to_string() == String::from("NotTracked") {
+                continue;
+            }
+            println!("Sending event: {}", event.to_string());
+            tauri::event::emit(&mut webview, event.to_string(), Some(event)).unwrap();
+        }
+    });
 }
