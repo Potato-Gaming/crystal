@@ -1,0 +1,2 @@
+[build]
+target-dir = "<pwd>/crystal/crystal-app/src-tauri/target"
