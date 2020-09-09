@@ -11,7 +11,6 @@ use std::sync::PoisonError;
 use std::thread;
 use std::time::Duration;
 
-#[derive(StateData)]
 pub struct Lockfile {
     pub inner: ShardedLock<Option<RiotLockFile>>,
 }
