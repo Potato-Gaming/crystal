@@ -1,12 +1,18 @@
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { routerMiddleware } from 'connected-react-router';
+import { History } from 'history';
 import rootReducer from './rootReducer';
 import rootSaga from './rootSaga';
 
 const sagaMiddleware = createSagaMiddleware({});
 
-const buildStore = () => {
-  const store = createStore(rootReducer(), {}, applyMiddleware(sagaMiddleware));
+const buildStore = (history: History) => {
+  const store = createStore(
+    rootReducer(history),
+    {},
+    applyMiddleware(routerMiddleware(history), sagaMiddleware)
+  );
 
   sagaMiddleware.run(rootSaga);
 
