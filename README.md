@@ -10,22 +10,4 @@ This is a side project, in very early phases of development. 😊
 
 ## Development
 
-To start running binary
-
-```bash
-cargo watch -x 'run --bin=crystal-core'
-```
-
-To log events you'll need to set up `RUST_LOG` environment variable.
-
-```bash
-RUST_LOG=crystal_core=debug cargo watch -x 'run --bin=crystal-core'
-```
-
-For windows you can run the following
-
-```powershell
-$env:RUST_LOG="crystal_core=debug"
-
-cargo watch -x 'run --bin=crystal-core'
-```
+Follow the instructions in the [crystal-app](./crystal-app) crate

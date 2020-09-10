@@ -8,21 +8,15 @@ Front End for the Crystal Application
 
 1.  Follow instructions for [Tauri](https://tauri.studio/en/docs/getting-started/intro)
 
-1.  Make sure crystal-core is compiled for production otherwise you'll need t
+    To make sure all the dependencies needed are ready run
 
+    ```bash
+    npm run info
     ```
-    cargo build --release --bin=crystal-core
-    ```
 
-1.  To run crystal-core when application starts, setup the environment variable: `CRYSTAL_CORE_BIN`
-    otherwise you'll need to run the binary in another terminal. Which is useful during development
-    process.
-
-To make sure all the dependencies needed are ready run
-
-```bash
-npm run info
-```
+1.  Install webview2, which uses Edge/Chromium so it's compatible with new JS features and a better
+    environment experience. [Download here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/),
+    More information about webview2 can be found [here](https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution).
 
 ### Run in development mode
 
@@ -30,12 +24,15 @@ npm run info
 npm start
 ```
 
-Windows may need to setup the environment first
+To log data from the core library you can do the following
+
+```bash
+RUST_LOG=crystal_core=debug npm start
+```
+
+For Windows the environment variable is set up like following
 
 ```powershell
- # This is an optional flag, when set it'll try to run the binary.
- # For development p
-
- $env:CRYSTAL_CORE_BIN="C:\<PATH>\crystal\target\release\crystal-core.exe"
- npm start
+$env:RUST_LOG="crystal_core=debug"
+npm start
 ```
