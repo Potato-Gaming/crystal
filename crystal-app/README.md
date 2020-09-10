@@ -14,9 +14,11 @@ Front End for the Crystal Application
     npm run info
     ```
 
-1.  Install webview2, which uses Edge/Chromium so it's compatible with new JS features and a better
-    environment experience. [Download here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/),
-    More information about webview2 can be found [here](https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution).
+1.  **For Windows** Install webview2, which uses Edge/Chromium so it's compatible with new JS
+    features and a better environment experience.
+    [Download here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/),
+    More information about webview2 can be found
+    [here](https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution).
 
 ### Run in development mode
 
