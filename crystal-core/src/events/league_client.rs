@@ -73,12 +73,15 @@ impl LeagueEventsWatcher {
         OwnedMessage::Text(txt) => {
           let event = parse_event_from(&txt).unwrap();
           debug!("Event {:?}", event);
-          match self.tx.send(event) {
-            Ok(_) => {}
-            Err(_) => {
-              warn!("Could not send message");
-            }
-          }
+          match event {
+            LeagueEvent::NotTracked => {}
+            event => match self.tx.send(event) {
+              Ok(_) => {}
+              Err(_) => {
+                warn!("Could not send message");
+              }
+            },
+          };
         }
         OwnedMessage::Ping(data) => {
           trace!("Ping: {:?}", data);
