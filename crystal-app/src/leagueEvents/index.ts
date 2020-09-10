@@ -1,6 +1,5 @@
 import { listen } from 'tauri/api/event';
 import {
-  LeagueEvent,
   LeagueEventName,
   ChampionSelectBySlotId,
   ChampionSelectSesion,

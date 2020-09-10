@@ -10,6 +10,8 @@ const buildStore = () => {
 
   sagaMiddleware.run(rootSaga);
 
+  global.__redux_store__ = store;
+
   return store;
 };
 
