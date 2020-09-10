@@ -1,6 +1,8 @@
-use league_client::models::{LolChampSelectChampSelectSession, LolChampSelectChampSelectSummoner};
+use league_client::models::{
+  LolChampSelectChampSelectSession, LolChampSelectChampSelectSummoner, LolGameflowGameflowSession,
+};
 use route_recognizer::Router;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{Error as SerdeJsonError, Value};
 use snafu::{Backtrace, ResultExt, Snafu};
 
@@ -32,6 +34,8 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
     AllowedRoutes::ChampSelectSession,
   );
 
+  router.add("lol-gameflow/v1/session", AllowedRoutes::Gameflow);
+
   let recognized = match router.recognize(uri) {
     Ok(r) => r,
     Err(e) => {
@@ -60,6 +64,14 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
 
       return Ok(LeagueEvent::ChampionSelectSesion(reparsed.2.data));
     }
+    AllowedRoutes::Gameflow => {
+      info!("Game Flow Session");
+
+      let reparsed = serde_json::from_str::<LeagueEventData<LolGameflowGameflowSession>>(str_event)
+        .context(ParseJson)?;
+
+      return Ok(LeagueEvent::Gameflow(reparsed.2.data));
+    }
   };
 }
 
@@ -77,6 +89,7 @@ struct EventData<T> {
 pub enum LeagueEvent {
   ChampionSelectBySlotId(usize, LolChampSelectChampSelectSummoner),
   ChampionSelectSesion(LolChampSelectChampSelectSession),
+  Gameflow(LolGameflowGameflowSession),
   NotTracked,
 }
 
@@ -84,6 +97,7 @@ pub enum LeagueEvent {
 pub enum AllowedRoutes {
   ChampSelectBySlot,
   ChampSelectSession,
+  Gameflow,
 }
 
 pub type Result<T, E = LeagueEventError> = std::result::Result<T, E>;
