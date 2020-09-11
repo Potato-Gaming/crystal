@@ -2,8 +2,8 @@
   "build": {
     "distDir": "../build",
     "devPath": "http://localhost:3000",
-    "beforeDevCommand": "",
-    "beforeBuildCommand": ""
+    "beforeDevCommand": "npm run start:web",
+    "beforeBuildCommand": "npm run build:web"
   },
   "ctx": {},
   "tauri": {
@@ -43,8 +43,8 @@
     },
     "window": {
       "title": "Crystal",
-      "width": 800,
-      "height": 600,
+      "width": 1366,
+      "height": 768,
       "resizable": true,
       "fullscreen": false
     },
