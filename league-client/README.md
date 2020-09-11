@@ -18,6 +18,8 @@ The [Rift Explorer](https://github.com/Pupix/rift-explorer) is needed to get the
     ```bash
     openapi-generator generate -i  ./openapi.json -g rust -o ./some-location --skip-validate-spec
     ```
+1.  Remove API implementations. It generates way too much code that is not being used and the usage
+    is not as straight forward as it should, it's overly complicated.
 
 ## Overview
 
