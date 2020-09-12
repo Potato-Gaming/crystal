@@ -7,6 +7,7 @@
 extern crate log;
 
 use crossbeam::channel::{unbounded, Receiver, Sender};
+use crystal_core::handlers::get_current_summoner;
 use crystal_core::LOCKFILE;
 use crystal_core::{events, lockfile};
 use dotenv::dotenv;
@@ -32,7 +33,7 @@ fn main() {
 
             emit_league_events(rx_ws, webview);
         })
-        .invoke_handler(|_webview, arg| {
+        .invoke_handler(|webview, arg| {
             use cmd::Cmd::*;
             match serde_json::from_str(arg) {
                 Err(e) => Err(e.to_string()),
@@ -43,6 +44,17 @@ fn main() {
                             //  your command code
                             println!("{}", argument);
                         }
+                        CurrentSummoner { callback, error } => tauri::execute_promise(
+                            webview,
+                            || {
+                                let summoner = get_current_summoner(&LOCKFILE).unwrap();
+                                println!("{:?}", summoner);
+
+                                Ok(summoner)
+                            },
+                            callback,
+                            error,
+                        ),
                     }
                     Ok(())
                 }

@@ -1,18 +1,18 @@
 import { createAction } from 'typesafe-actions';
 import {
-  LolChampSelectChampSelectSession,
-  LolChampSelectChampSelectSummoner,
-  LolGameflowGameflowSession,
-} from 'league-client';
+  ChampSelectSession,
+  GameflowSession,
+  ChampSelectSummoner,
+} from './types';
 
 export const championSelectSession = createAction(
   'match/championSelectsession'
-)<LolChampSelectChampSelectSession>();
+)<ChampSelectSession>();
 
 export const championSelectSummoner = createAction(
   'match/championSelectSummoner'
-)<number, LolChampSelectChampSelectSummoner>();
+)<number, ChampSelectSummoner>();
 
 export const gameflowSession = createAction('match/gameflowSession')<
-  LolGameflowGameflowSession
+  GameflowSession
 >();

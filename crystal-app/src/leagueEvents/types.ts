@@ -2,6 +2,7 @@ import {
   LolChampSelectChampSelectSession,
   LolChampSelectChampSelectSummoner,
   LolGameflowGameflowSession,
+  LolSummonerSummoner,
 } from 'league-client';
 
 export type LeagueEvent =
@@ -21,7 +22,12 @@ export type ChampionSelectSesion = {
   ChampionSelectSesion: LolChampSelectChampSelectSession;
 };
 
+export type CurrentSummoner = {
+  CurrentSummoner: LolSummonerSummoner;
+};
+
 export type LeagueEventName =
   | 'Gameflow'
   | 'ChampionSelectBySlotId'
-  | 'ChampionSelectSesion';
+  | 'ChampionSelectSesion'
+  | 'CurrentSummoner';

@@ -14,6 +14,7 @@ extern crate log;
 extern crate strum_macros;
 
 pub mod events;
+pub mod handlers;
 pub mod lockfile;
 
 use lockfile::Lockfile;

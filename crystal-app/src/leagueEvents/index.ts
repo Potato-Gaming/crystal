@@ -4,6 +4,7 @@ import {
   ChampionSelectBySlotId,
   ChampionSelectSesion,
   Gameflow,
+  CurrentSummoner,
 } from './types';
 import { Store } from '../store/createStore';
 import {
@@ -38,6 +39,12 @@ class LeagueEvents {
     listen<Gameflow>(gameFlow, ({ payload }) => {
       const { Gameflow: data } = payload;
       dispatch(gameflowSession(data));
+    });
+
+    const currentSummoner: LeagueEventName = 'CurrentSummoner';
+    listen<CurrentSummoner>(currentSummoner, ({ payload }) => {
+      const { CurrentSummoner: data } = payload;
+      console.log('Current summoner', data);
     });
   }
 }

@@ -1,5 +1,6 @@
 use league_client::models::{
   LolChampSelectChampSelectSession, LolChampSelectChampSelectSummoner, LolGameflowGameflowSession,
+  LolSummonerSummoner,
 };
 use route_recognizer::Router;
 use serde::{Deserialize, Serialize};
@@ -34,7 +35,12 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
     AllowedRoutes::ChampSelectSession,
   );
 
-  router.add("lol-gameflow/v1/session", AllowedRoutes::Gameflow);
+  router.add("/lol-gameflow/v1/session", AllowedRoutes::Gameflow);
+
+  router.add(
+    "/lol-summoner/v1/current-summoner",
+    AllowedRoutes::CurrentSummoner,
+  );
 
   let recognized = match router.recognize(uri) {
     Ok(r) => r,
@@ -72,6 +78,14 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
 
       return Ok(LeagueEvent::Gameflow(reparsed.2.data));
     }
+    AllowedRoutes::CurrentSummoner => {
+      info!("Current Summoner");
+
+      let reparsed = serde_json::from_str::<LeagueEventData<LolSummonerSummoner>>(str_event)
+        .context(ParseJson)?;
+
+      return Ok(LeagueEvent::CurrentSummoner(reparsed.2.data));
+    }
   };
 }
 
@@ -90,6 +104,7 @@ pub enum LeagueEvent {
   ChampionSelectBySlotId(usize, LolChampSelectChampSelectSummoner),
   ChampionSelectSesion(LolChampSelectChampSelectSession),
   Gameflow(LolGameflowGameflowSession),
+  CurrentSummoner(LolSummonerSummoner),
   NotTracked,
 }
 
@@ -98,6 +113,7 @@ pub enum AllowedRoutes {
   ChampSelectBySlot,
   ChampSelectSession,
   Gameflow,
+  CurrentSummoner,
 }
 
 pub type Result<T, E = LeagueEventError> = std::result::Result<T, E>;
