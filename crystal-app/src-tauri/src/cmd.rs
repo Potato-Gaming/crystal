@@ -5,4 +5,6 @@ use serde::Deserialize;
 pub enum Cmd {
   /// Fetches current summoner.
   CurrentSummoner { callback: String, error: String },
+  /// Fetches region locale.
+  RegionLocale { callback: String, error: String },
 }

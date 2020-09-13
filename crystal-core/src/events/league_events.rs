@@ -1,6 +1,6 @@
 use league_client::models::{
   LolChampSelectChampSelectSession, LolChampSelectChampSelectSummoner, LolGameflowGameflowSession,
-  LolSummonerSummoner,
+  LolSummonerSummoner, RegionLocale,
 };
 use route_recognizer::Router;
 use serde::{Deserialize, Serialize};
@@ -41,6 +41,8 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
     "/lol-summoner/v1/current-summoner",
     AllowedRoutes::CurrentSummoner,
   );
+
+  router.add("/riotclient/region-locale", AllowedRoutes::RegionLocale);
 
   let recognized = match router.recognize(uri) {
     Ok(r) => r,
@@ -86,6 +88,14 @@ pub fn parse_event_from(str_event: &str) -> Result<LeagueEvent> {
 
       return Ok(LeagueEvent::CurrentSummoner(reparsed.2.data));
     }
+    AllowedRoutes::RegionLocale => {
+      info!("Region Locale");
+
+      let reparsed =
+        serde_json::from_str::<LeagueEventData<RegionLocale>>(str_event).context(ParseJson)?;
+
+      return Ok(LeagueEvent::RegionLocale(reparsed.2.data));
+    }
   };
 }
 
@@ -105,6 +115,7 @@ pub enum LeagueEvent {
   ChampionSelectSesion(LolChampSelectChampSelectSession),
   Gameflow(LolGameflowGameflowSession),
   CurrentSummoner(LolSummonerSummoner),
+  RegionLocale(RegionLocale),
   NotTracked,
 }
 
@@ -114,6 +125,7 @@ pub enum AllowedRoutes {
   ChampSelectSession,
   Gameflow,
   CurrentSummoner,
+  RegionLocale,
 }
 
 pub type Result<T, E = LeagueEventError> = std::result::Result<T, E>;

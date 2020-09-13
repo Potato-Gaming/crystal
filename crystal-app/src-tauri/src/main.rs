@@ -3,8 +3,9 @@
     windows_subsystem = "windows"
 )]
 
+use crate::cmd::Cmd;
 use crossbeam::channel::{unbounded, Receiver, Sender};
-use crystal_core::handlers::get_current_summoner;
+use crystal_core::handlers::{get_current_summoner, get_region_locale, LeagueApi};
 use crystal_core::LOCKFILE;
 use crystal_core::{events, lockfile};
 use dotenv::dotenv;
@@ -30,25 +31,34 @@ fn main() {
 
             emit_league_events(rx_ws, webview);
         })
-        .invoke_handler(|webview, arg| {
-            use cmd::Cmd::*;
-            match serde_json::from_str(arg) {
-                Err(e) => Err(e.to_string()),
-                Ok(command) => {
-                    match command {
-                        CurrentSummoner { callback, error } => tauri::execute_promise(
-                            webview,
-                            || {
-                                let summoner = get_current_summoner(&LOCKFILE).unwrap();
+        .invoke_handler(|webview, arg| match serde_json::from_str(arg) {
+            Err(e) => Err(e.to_string()),
+            Ok(command) => {
+                match command {
+                    Cmd::CurrentSummoner { callback, error } => tauri::execute_promise(
+                        webview,
+                        || {
+                            let api = LeagueApi::new(&LOCKFILE);
+                            let summoner = get_current_summoner(&api).unwrap();
 
-                                Ok(summoner)
-                            },
-                            callback,
-                            error,
-                        ),
-                    }
-                    Ok(())
+                            Ok(summoner)
+                        },
+                        callback,
+                        error,
+                    ),
+                    Cmd::RegionLocale { callback, error } => tauri::execute_promise(
+                        webview,
+                        || {
+                            let api = LeagueApi::new(&LOCKFILE);
+                            let locale = get_region_locale(&api).unwrap();
+
+                            Ok(locale)
+                        },
+                        callback,
+                        error,
+                    ),
                 }
+                Ok(())
             }
         })
         .build()
