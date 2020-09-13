@@ -11,8 +11,6 @@ export default function* matchSummonerSaga() {
 function* fetchSummonerFlow() {
   while (true) {
     yield* take(fetchSummoner.request);
-    console.log('fetch summoner');
-
     yield call(handleFetchSummoner);
   }
 }
@@ -22,7 +20,8 @@ function* handleFetchSummoner() {
     const result: Summoner = yield call(promisified, {
       cmd: 'currentSummoner',
     });
-    console.log('RESULT', result);
+
+    yield put(fetchSummoner.success(result));
   } catch (e) {
     yield put(fetchSummoner.failure(e));
   }

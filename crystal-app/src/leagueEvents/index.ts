@@ -12,6 +12,7 @@ import {
   championSelectSummoner,
   gameflowSession,
 } from '../store/match';
+import { fetchSummoner } from '../store/summoner';
 
 class LeagueEvents {
   store: Store;
@@ -44,7 +45,7 @@ class LeagueEvents {
     const currentSummoner: LeagueEventName = 'CurrentSummoner';
     listen<CurrentSummoner>(currentSummoner, ({ payload }) => {
       const { CurrentSummoner: data } = payload;
-      console.log('Current summoner', data);
+      dispatch(fetchSummoner.success(data));
     });
   }
 }

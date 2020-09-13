@@ -3,9 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-#[macro_use]
-extern crate log;
-
 use crossbeam::channel::{unbounded, Receiver, Sender};
 use crystal_core::handlers::get_current_summoner;
 use crystal_core::LOCKFILE;
@@ -39,16 +36,10 @@ fn main() {
                 Err(e) => Err(e.to_string()),
                 Ok(command) => {
                     match command {
-                        // definitions for your custom commands from Cmd here
-                        MyCustomCommand { argument } => {
-                            //  your command code
-                            println!("{}", argument);
-                        }
                         CurrentSummoner { callback, error } => tauri::execute_promise(
                             webview,
                             || {
                                 let summoner = get_current_summoner(&LOCKFILE).unwrap();
-                                println!("{:?}", summoner);
 
                                 Ok(summoner)
                             },
