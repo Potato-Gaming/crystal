@@ -15,7 +15,7 @@ use tauri::WebviewMut;
 mod cmd;
 
 fn main() {
-    #[cfg(target_family = "unix")]
+    #[cfg(target_family = "linux")]
     openssl_probe::init_ssl_cert_env_vars();
 
     dotenv().ok();
