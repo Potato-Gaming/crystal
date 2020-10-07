@@ -5,7 +5,7 @@ use crossbeam::sync::{ShardedLock, ShardedLockReadGuard, ShardedLockWriteGuard};
 use league_client_connector::RiotLockFile;
 use league_client_connector::{LeagueClientConnector, LeagueConnectorError};
 use notify::{Error as NotifyError, RecommendedWatcher, RecursiveMode, Watcher};
-use snafu::{ResultExt, Snafu};
+use snafu::ResultExt;
 use std::sync::mpsc::{channel, RecvError};
 use std::sync::PoisonError;
 use std::thread;
