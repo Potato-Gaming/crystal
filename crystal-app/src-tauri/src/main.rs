@@ -23,7 +23,7 @@ fn main() {
 
   #[cfg(target_os = "windows")]
   unsafe {
-    winapi::um::shellscalingapi::SetProcessDpiAwareness(2);
+    winapi::um::shellscalingapi::SetProcessDpiAwareness(1);
   }
 
   dotenv().ok();
