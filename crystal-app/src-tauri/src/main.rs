@@ -1,7 +1,10 @@
 #![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
+  all(not(debug_assertions), target_os = "windows"),
+  windows_subsystem = "windows"
 )]
+
+#[cfg(windows)]
+extern crate winapi;
 
 use crate::cmd::Cmd;
 use crossbeam::channel::{unbounded, Receiver, Sender};
@@ -15,78 +18,83 @@ use tauri::WebviewMut;
 mod cmd;
 
 fn main() {
-    #[cfg(target_family = "linux")]
-    openssl_probe::init_ssl_cert_env_vars();
+  #[cfg(target_family = "linux")]
+  openssl_probe::init_ssl_cert_env_vars();
 
-    dotenv().ok();
-    pretty_env_logger::init();
+  #[cfg(target_os = "windows")]
+  unsafe {
+    winapi::um::shellscalingapi::SetProcessDpiAwareness(2);
+  }
 
-    let (tx_ws, rx_ws): (Sender<events::LeagueEvent>, Receiver<events::LeagueEvent>) = unbounded();
-    bootstrap_crystal_core(tx_ws);
+  dotenv().ok();
+  pretty_env_logger::init();
 
-    tauri::AppBuilder::new()
-        .setup(move |webview, _source| {
-            let webview = webview.clone().as_mut();
-            let rx_ws = rx_ws.clone();
+  let (tx_ws, rx_ws): (Sender<events::LeagueEvent>, Receiver<events::LeagueEvent>) = unbounded();
+  bootstrap_crystal_core(tx_ws);
 
-            emit_league_events(rx_ws, webview);
-        })
-        .invoke_handler(|webview, arg| match serde_json::from_str(arg) {
-            Err(e) => Err(e.to_string()),
-            Ok(command) => {
-                match command {
-                    Cmd::CurrentSummoner { callback, error } => tauri::execute_promise(
-                        webview,
-                        || {
-                            let api = LeagueApi::new(&LOCKFILE);
-                            let summoner = get_current_summoner(&api).unwrap();
+  tauri::AppBuilder::new()
+    .setup(move |webview, _source| {
+      let webview = webview.clone().as_mut();
+      let rx_ws = rx_ws.clone();
 
-                            Ok(summoner)
-                        },
-                        callback,
-                        error,
-                    ),
-                    Cmd::RegionLocale { callback, error } => tauri::execute_promise(
-                        webview,
-                        || {
-                            let api = LeagueApi::new(&LOCKFILE);
-                            let locale = get_region_locale(&api).unwrap();
+      emit_league_events(rx_ws, webview);
+    })
+    .invoke_handler(|webview, arg| match serde_json::from_str(arg) {
+      Err(e) => Err(e.to_string()),
+      Ok(command) => {
+        match command {
+          Cmd::CurrentSummoner { callback, error } => tauri::execute_promise(
+            webview,
+            || {
+              let api = LeagueApi::new(&LOCKFILE);
+              let summoner = get_current_summoner(&api).unwrap();
 
-                            Ok(locale)
-                        },
-                        callback,
-                        error,
-                    ),
-                }
-                Ok(())
-            }
-        })
-        .build()
-        .run();
+              Ok(summoner)
+            },
+            callback,
+            error,
+          ),
+          Cmd::RegionLocale { callback, error } => tauri::execute_promise(
+            webview,
+            || {
+              let api = LeagueApi::new(&LOCKFILE);
+              let locale = get_region_locale(&api).unwrap();
+
+              Ok(locale)
+            },
+            callback,
+            error,
+          ),
+        }
+        Ok(())
+      }
+    })
+    .build()
+    .run();
 }
 
 fn bootstrap_crystal_core(tx_ws: Sender<events::LeagueEvent>) {
-    let (tx, rx): (
-        Sender<events::LockfileEvent>,
-        Receiver<events::LockfileEvent>,
-    ) = unbounded();
+  let (tx, rx): (
+    Sender<events::LockfileEvent>,
+    Receiver<events::LockfileEvent>,
+  ) = unbounded();
 
-    lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
-    events::listen(&LOCKFILE, rx, tx_ws);
+  lockfile::watch_lockfile(&LOCKFILE, tx).unwrap();
+  events::listen(&LOCKFILE, rx, tx_ws);
 }
 
 fn emit_league_events(rx: Receiver<events::LeagueEvent>, webview: WebviewMut) {
-    thread::spawn(move || {
-        let rx = rx;
-        let mut webview = webview;
+  thread::spawn(move || {
+    let rx = rx;
+    let mut webview = webview;
 
-        loop {
-            let event = rx.recv().unwrap();
-            if event.to_string() == String::from("NotTracked") {
-                continue;
-            }
-            println!("Sending event: {}", event.to_string());
-            tauri::event::emit(&mut webview, event.to_string(), Some(event)).unwrap();
-        }
-    });
+    loop {
+      let event = rx.recv().unwrap();
+      if event.to_string() == String::from("NotTracked") {
+        continue;
+      }
+      println!("Sending event: {}", event.to_string());
+      tauri::event::emit(&mut webview, event.to_string(), Some(event)).unwrap();
+    }
+  });
 }
