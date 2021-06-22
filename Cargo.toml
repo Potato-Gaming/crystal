@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+  "crystal-api-core",
   "crystal-core",
   "crystal-app/src-tauri",
   "league-client"
